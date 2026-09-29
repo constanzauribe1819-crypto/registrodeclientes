@@ -1,0 +1,181 @@
+using System;
+using System.Collections.Generic;
+using System.Data;
+using Microsoft.Data.SqlClient;
+using PeluqueriaApp.Dominio; // Ajusta el namespace según tu proyecto
+
+namespace PeluqueriaApp.Datos
+{
+    public class bd_usuario
+    {
+        // 1. Obtener todos los registros de clientes (con JOIN a cliente)
+        public List ObtenerTodosLosRegistros()
+        {
+            List lista = new List();
+
+            using (SqlConnection con = Conexion.ObtenerConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_leer_registros_cliente", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    con.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new RegistroCliente(
+                                Convert.ToInt32(reader["id_registro"]),
+                                Convert.ToInt32(reader["id_cliente"]),
+                                reader["nombre"].ToString() ?? string.Empty,
+                                reader["apellido"].ToString() ?? string.Empty,
+                                reader["tipo_registro"].ToString() ?? string.Empty,
+                                reader["descripcion"].ToString() ?? string.Empty,
+                                Convert.ToDateTime(reader["fecha_registro"]),
+                                Convert.ToDecimal(reader["precio"])
+                            ));
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
+
+        // 2. Obtener registros filtrados por tipo de registro (Stored Procedure)
+        public List ObtenerRegistrosPorTipo(string tipoRegistro)
+        {
+            List lista = new List();
+
+            using (SqlConnection con = Conexion.ObtenerConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_leer_registros_cliente_por_tipo", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@tipo_registro", tipoRegistro);
+
+                    con.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new RegistroCliente(
+                                Convert.ToInt32(reader["id_registro"]),
+                                Convert.ToInt32(reader["id_cliente"]),
+                                reader["nombre"].ToString() ?? string.Empty,
+                                reader["apellido"].ToString() ?? string.Empty,
+                                reader["tipo_registro"].ToString() ?? string.Empty,
+                                reader["descripcion"].ToString() ?? string.Empty,
+                                Convert.ToDateTime(reader["fecha_registro"]),
+                                Convert.ToDecimal(reader["precio"])
+                            ));
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
+
+        // 3. Guardar / Insertar un nuevo registro de cliente (Stored Procedure)
+        public bool GuardarRegistro(RegistroCliente registro)
+        {
+            using (SqlConnection con = Conexion.ObtenerConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_crear_registro_cliente", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_cliente", registro.IdCliente);
+                    cmd.Parameters.AddWithValue("@tipo_registro", registro.TipoRegistro);
+                    cmd.Parameters.AddWithValue("@descripcion", registro.Descripcion);
+                    cmd.Parameters.AddWithValue("@precio", registro.Precio);
+
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        // 4. Actualizar un registro existente (Stored Procedure)[cite: 2]
+        public bool ActualizarRegistro(RegistroCliente registro)
+        {
+            using (SqlConnection con = Conexion.ObtenerConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_actualizar_registro_cliente", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_registro", registro.IdRegistro);
+                    cmd.Parameters.AddWithValue("@id_cliente", registro.IdCliente);
+                    cmd.Parameters.AddWithValue("@tipo_registro", registro.TipoRegistro);
+                    cmd.Parameters.AddWithValue("@descripcion", registro.Descripcion);
+                    cmd.Parameters.AddWithValue("@precio", registro.Precio);
+
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        // 5. Eliminar un registro por su ID (Stored Procedure)[cite: 2]
+        public bool EliminarRegistro(int idRegistro)
+        {
+            using (SqlConnection con = Conexion.ObtenerConexion())
+            {
+                using (SqlCommand cmd = new SqlCommand("sp_eliminar_registro_cliente", con))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@id_registro", idRegistro);
+
+                    con.Open();
+                    return cmd.ExecuteNonQuery() > 0;
+                }
+            }
+        }
+
+        // 6. Obtener resultados de auditoría del log de registros (`log_registro_cliente`)[cite: 2]
+        public List ObtenerHistóricoMovimientos()
+        {
+            List lista = new List();
+
+            using (SqlConnection con = Conexion.ObtenerConexion())
+            {
+                string query = @"SELECT id_log, id_registro, tipo_movimiento, fecha_movimiento, usuario,
+                                        id_cliente_anterior, tipo_registro_anterior, descripcion_anterior, fecha_registro_anterior, precio_anterior,
+                                        id_cliente_nuevo, tipo_registro_nuevo, descripcion_nuevo, fecha_registro_nuevo, precio_nuevo
+                                FROM log_registro_cliente 
+                                ORDER BY id_log DESC";
+
+                using (SqlCommand cmd = new SqlCommand(query, con))
+                {
+                    con.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(new LogRegistroClienteDTO
+                            {
+                                IdLog = Convert.ToInt32(reader["id_log"]),
+                                IdRegistro = reader["id_registro"] != DBNull.Value ? Convert.ToInt32(reader["id_registro"]) : (int?)null,
+                                TipoMovimiento = reader["tipo_movimiento"].ToString() ?? "",
+                                FechaMovimiento = Convert.ToDateTime(reader["fecha_movimiento"]),
+                                Usuario = reader["usuario"]?.ToString() ?? "",
+                                
+                                IdClienteAnterior = reader["id_cliente_anterior"] != DBNull.Value ? Convert.ToInt32(reader["id_cliente_anterior"]) : (int?)null,
+                                TipoRegistroAnterior = reader["tipo_registro_anterior"]?.ToString() ?? "-",
+                                DescripcionAnterior = reader["descripcion_anterior"]?.ToString() ?? "-",
+                                FechaRegistroAnterior = reader["fecha_registro_anterior"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_registro_anterior"]) : (DateTime?)null,
+                                PrecioAnterior = reader["precio_anterior"] != DBNull.Value ? Convert.ToDecimal(reader["precio_anterior"]) : (decimal?)null,
+
+                                IdClienteNuevo = reader["id_cliente_nuevo"] != DBNull.Value ? Convert.ToInt32(reader["id_cliente_nuevo"]) : (int?)null,
+                                TipoRegistroNuevo = reader["tipo_registro_nuevo"]?.ToString() ?? "-",
+                                DescripcionNuevo = reader["descripcion_nuevo"]?.ToString() ?? "-",
+                                FechaRegistroNuevo = reader["fecha_registro_nuevo"] != DBNull.Value ? Convert.ToDateTime(reader["fecha_registro_nuevo"]) : (DateTime?)null,
+                                PrecioNuevo = reader["precio_nuevo"] != DBNull.Value ? Convert.ToDecimal(reader["precio_nuevo"]) : (decimal?)null
+                            });
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+    }
+}s

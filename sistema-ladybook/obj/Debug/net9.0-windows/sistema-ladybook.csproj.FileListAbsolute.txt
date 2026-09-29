@@ -1,0 +1,14 @@
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\bin\Debug\net9.0-windows\sistema-ladybook.exe
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\bin\Debug\net9.0-windows\sistema-ladybook.deps.json
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\bin\Debug\net9.0-windows\sistema-ladybook.runtimeconfig.json
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\bin\Debug\net9.0-windows\sistema-ladybook.dll
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\bin\Debug\net9.0-windows\sistema-ladybook.pdb
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\sistema-ladybook.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\sistema-ladybook.AssemblyInfoInputs.cache
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\sistema-ladybook.AssemblyInfo.cs
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\sistema-ladybook.csproj.CoreCompileInputs.cache
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\sistema-ladybook.dll
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\refint\sistema-ladybook.dll
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\sistema-ladybook.pdb
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\sistema-ladybook.genruntimeconfig.cache
+C:\Users\Laboratorio_Sj\Desktop\repost\sistema-ladybook\obj\Debug\net9.0-windows\ref\sistema-ladybook.dll
