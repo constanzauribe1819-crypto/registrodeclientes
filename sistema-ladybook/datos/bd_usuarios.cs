@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using PeluqueriaApp.Dominio; // Ajusta el namespace según tu proyecto
+using sistema-ladybook.datos; // Ajusta el namespace según tu proyecto
 
-namespace PeluqueriaApp.Datos
+namespace sistema-ladybook.Datos
 {
     public class bd_usuario
     {
